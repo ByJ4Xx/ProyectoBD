@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 style="margin-bottom: 2rem;">Mi Cuenta</h1>
+
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
+    <!-- Profile Info -->
+    <div class="glass-panel" style="height: fit-content;">
+        <h3>Perfil</h3>
+        <p><strong>Nombre:</strong> {{ session['user']['nombre'] }}</p>
+        <p><strong>Email:</strong> {{ session['user']['email'] }}</p>
+        <p><strong>Rol:</strong> {{ session['user']['role'] }}</p>
+    </div>
+
+    <!-- Orders -->
+    <div class="glass-panel">
+        <h3>Mis Pedidos</h3>
+        {% if pedidos %}
+        <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+            <thead style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <tr style="text-align: left;">
+                    <th style="padding: 10px;">ID Pedido</th>
+                    <th style="padding: 10px;">Fecha</th>
+                    <th style="padding: 10px;">Total</th>
+                    <th style="padding: 10px;">Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pedido in pedidos %}
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <td style="padding: 10px;">#{{ loop.index }}</td>
+                    <td style="padding: 10px;">{{ pedido.fecha_pedido.strftime('%Y-%m-%d') }}</td>
+                    <td style="padding: 10px;">${{ pedido.total / 100 }}</td>
+                    <td style="padding: 10px;">
+                        <span
+                            style="padding: 4px 8px; border-radius: 4px; background: rgba(3, 218, 198, 0.2); color: #a7ffeb; font-size: 0.8rem;">
+                            {{ pedido.estado }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="color: #aaa; margin-top: 1rem;">No has realizado pedidos aún.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
