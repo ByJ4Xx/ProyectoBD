@@ -144,12 +144,155 @@ a:hover {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 2rem;
+    /* Vertical and horizontal gap */
+    margin-bottom: 2rem;
 }
 
+/* Efecto hover mejorado para product cards */
 .product-card {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    z-index: 1;
+}
+
+/* Fondo con gradiente para el efecto de luz */
+.product-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+            rgba(187, 134, 252, 0.15) 0%,
+            rgba(3, 218, 198, 0.05) 30%,
+            transparent 70%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.product-card:hover::before {
+    opacity: 1;
+}
+
+/* Efecto de elevación suave */
+.product-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 60px rgba(187, 134, 252, 0.2),
+        0 0 100px rgba(3, 218, 198, 0.1);
+    border-color: rgba(187, 134, 252, 0.3);
+}
+
+/* Borde sutil que aparece al hacer hover */
+.product-card::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg,
+            var(--primary-color),
+            var(--secondary-color),
+            var(--primary-color));
+    border-radius: calc(var(--card-radius) + 4px);
+    z-index: -2;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.product-card:hover::after {
+    opacity: 0.3;
+}
+
+/* Efecto de brillo en la imagen */
+.product-img {
+    transition: filter 0.5s ease;
+    filter: brightness(0.9);
+}
+
+.product-card:hover .product-img {
+    filter: brightness(1.1) contrast(1.05);
+}
+
+/* Animación sutil para el precio */
+.product-price {
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.product-card:hover .product-price {
+    transform: scale(1.05);
+    color: #fff;
+    text-shadow: 0 0 10px rgba(3, 218, 198, 0.5);
+}
+
+.product-description {
+    flex-grow: 1;
+    /* Limita el texto a 3 líneas máximo */
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Search Bar */
+.search-container {
     display: flex;
-    flex-direction: column;
-    height: 100%;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-radius: 12px;
+}
+
+.search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.1rem;
+    border-bottom: 2px solid var(--glass-border);
+    padding: 0.5rem;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+}
+
+.search-select {
+    background: var(--bg-color);
+    color: #fff;
+    border: 1px solid var(--glass-border);
+    padding: 0.5rem;
+    border-radius: 8px;
+}
+
+/* Cart Badge */
+.cart-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: var(--accent-color);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: bold;
 }
 
 .product-img {
@@ -158,7 +301,8 @@ a:hover {
     object-fit: cover;
     border-radius: 12px;
     margin-bottom: 1rem;
-    background-color: rgba(255,255,255,0.05); /* Placeholder if no img */
+    background-color: rgba(255, 255, 255, 0.05);
+    /* Placeholder if no img */
 }
 
 .product-title {
@@ -188,11 +332,13 @@ a:hover {
     border-radius: 8px;
     margin-bottom: 1rem;
 }
+
 .alert-error {
     background: rgba(207, 102, 121, 0.2);
     border: 1px solid var(--accent-color);
     color: #ffb4b4;
 }
+
 .alert-success {
     background: rgba(3, 218, 198, 0.2);
     border: 1px solid var(--secondary-color);

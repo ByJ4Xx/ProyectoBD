@@ -3,50 +3,105 @@
 {% block content %}
 <h1 style="margin-bottom: 2rem;">Panel de Administración</h1>
 
-<div class="glass-panel">
-    <h2 style="margin-bottom: 1.5rem;">Agregar Nuevo Producto</h2>
-    <form action="/admin/add_product" method="POST">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
-                <label class="form-label">Nombre del Producto</label>
-                <input type="text" name="nombre" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label">SKU</label>
-                <input type="text" name="sku" class="form-control" required>
-            </div>
-        </div>
+<!-- Analytics Dashboard -->
+<div
+    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+    <div class="glass-panel" style="text-align: center;">
+        <h3 style="margin: 0; color: #aaa;">Ventas Totales</h3>
+        <div style="font-size: 2.5rem; font-weight: bold; color: var(--secondary-color); margin: 0.5rem 0;">${{
+            total_sales / 100 }}</div>
+    </div>
+    <div class="glass-panel" style="text-align: center;">
+        <h3 style="margin: 0; color: #aaa;">Total Pedidos</h3>
+        <div style="font-size: 2.5rem; font-weight: bold; color: var(--primary-color); margin: 0.5rem 0;">{{
+            total_orders }}</div>
+    </div>
+    <div class="glass-panel" style="text-align: center;">
+        <h3 style="margin: 0; color: #aaa;">Productos Bajo Stock</h3>
+        <div style="font-size: 2.5rem; font-weight: bold; color: var(--accent-color); margin: 0.5rem 0;">{{
+            low_stock_count }}</div>
+    </div>
+</div>
 
-        <div class="form-group">
-            <label class="form-label">Descripción</label>
-            <textarea name="descripcion" class="form-control" rows="3"></textarea>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
-                <label class="form-label">Precio (centavos)</label>
-                <input type="number" name="precio" class="form-control" required>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+    <!-- Add Product Form -->
+    <div class="glass-panel">
+        <h2 style="margin-bottom: 1.5rem;">Agregar Nuevo Producto</h2>
+        <form action="/admin/add_product" method="POST">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label">Nombre del Producto</label>
+                    <input type="text" name="nombre" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">SKU</label>
+                    <input type="text" name="sku" class="form-control" required>
+                </div>
             </div>
-            <div class="form-group">
-                <label class="form-label">Stock</label>
-                <input type="number" name="stock" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Categoría</label>
-                <select name="categoria_id" class="form-control">
-                    {% for cat in categorias %}
-                    <option value="{{ cat._id }}">{{ cat.nombre }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </div>
 
-        <div class="form-group">
-            <label class="form-label">URL de Imagen</label>
-            <input type="text" name="imagen_url" class="form-control" placeholder="https://ejemplo.com/img.jpg">
-        </div>
+            <div class="form-group">
+                <label class="form-label">Descripción</label>
+                <textarea name="descripcion" class="form-control" rows="3"></textarea>
+            </div>
 
-        <button type="submit" class="btn">Guardar Producto</button>
-    </form>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label">Precio (centavos)</label>
+                    <input type="number" name="precio" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Stock</label>
+                    <input type="number" name="stock" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Categoría</label>
+                    <select name="categoria_id" class="form-control">
+                        {% for cat in categorias %}
+                        <option value="{{ cat._id }}">{{ cat.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">URL de Imagen</label>
+                <input type="text" name="imagen_url" class="form-control" placeholder="https://ejemplo.com/img.jpg">
+            </div>
+
+            <button type="submit" class="btn">Guardar Producto</button>
+        </form>
+    </div>
+
+    <!-- Recent Orders List -->
+    <div class="glass-panel">
+        <h2 style="margin-bottom: 1.5rem;">Últimos Pedidos</h2>
+        {% if recent_orders %}
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <th style="padding: 8px;">ID</th>
+                    <th style="padding: 8px;">Total</th>
+                    <th style="padding: 8px;">Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in recent_orders %}
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <td style="padding: 8px;">{{ order.numero_pedido }}</td>
+                    <td style="padding: 8px;">${{ order.total / 100 }}</td>
+                    <td style="padding: 8px;">
+                        <span
+                            style="font-size: 0.8rem; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.1);">
+                            {{ order.estado }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="color: #aaa;">No hay pedidos recientes.</p>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="glass-panel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h1>Detalles del Pedido</h1>
+        <span style="font-size: 1.2rem; color: var(--secondary-color);">{{ order.numero_pedido }}</span>
+    </div>
+
+    <div style="margin-bottom: 2rem;">
+        <p><strong>Fecha:</strong> {{ fecha_str }}</p>
+        <p><strong>Estado:</strong> <span
+                style="padding: 4px 8px; border-radius: 4px; background: rgba(255,255,255,0.1);">{{ order.estado
+                }}</span></p>
+        <p><strong>Total:</strong> ${{ order.total }}</p>
+    </div>
+
+    <h3>Items</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+        <thead>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); text-align: left;">
+                <th style="padding: 10px;">Producto</th>
+                <th style="padding: 10px;">Precio Unitario</th>
+                <th style="padding: 10px;">Cantidad</th>
+                <th style="padding: 10px;">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 10px;">{{ item.nombre }}</td>
+                <td style="padding: 10px;">${{ item.precio_unitario }}</td>
+                <td style="padding: 10px;">{{ item.cantidad }}</td>
+                <td style="padding: 10px;">${{ (item.precio_unitario * item.cantidad) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="margin-top: 2rem; text-align: right;">
+        <a href="/dashboard" class="btn btn-secondary">Volver a Mis Pedidos</a>
+    </div>
+</div>
+{% endblock %}

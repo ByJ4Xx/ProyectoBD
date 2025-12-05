@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 style="margin-bottom: 2rem;">Tu Carrito de Compras</h1>
+
+{% if cart_items %}
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+    <!-- Items List -->
+    <div class="glass-panel">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); text-align: left;">
+                    <th style="padding: 10px;">Producto</th>
+                    <th style="padding: 10px;">Precio</th>
+                    <th style="padding: 10px;">Cantidad</th>
+                    <th style="padding: 10px;">Total</th>
+                    <th style="padding: 10px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <td style="padding: 10px;">
+                        <a href="{{ url_for('product_details', product_id=item.producto_id_str) }}">{{ item.nombre }}</a>
+                        <div style="font-size: .9rem; color: rgba(255,255,255,0.7);">SKU: {{ item.sku }}</div>
+                    </td>
+                    <td style="padding: 10px;">{{ item.precio_unitario }}</td>
+                    <td style="padding: 10px;">{{ item.cantidad }}</td>
+                    <td style="padding: 10px;">{{ item.precio_unitario * item.cantidad }}</td>
+                    <td style="padding: 10px;"><a href="{{ url_for('remove_from_cart', product_id=item.producto_id_str) }}" class="btn">Eliminar</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Summary -->
+    <div class="glass-panel">
+        <h3>Resumen</h3>
+        <p><strong>Subtotal:</strong> {{ total }}</p>
+        <form action="{{ url_for('checkout') }}" method="post">
+            <button type="submit" class="btn">Pagar</button>
+        </form>
+    </div>
+</div>
+{% else %}
+<div class="glass-panel">
+    <p>Tu carrito está vacío.</p>
+    <a href="/" class="btn">Ir a la Tienda</a>
+</div>
+{% endif %}
+
+{% endblock %}

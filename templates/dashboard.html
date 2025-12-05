@@ -23,20 +23,17 @@
                     <th style="padding: 10px;">Fecha</th>
                     <th style="padding: 10px;">Total</th>
                     <th style="padding: 10px;">Estado</th>
+                    <th style="padding: 10px;"></th>
                 </tr>
             </thead>
             <tbody>
                 {% for pedido in pedidos %}
                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                    <td style="padding: 10px;">#{{ loop.index }}</td>
-                    <td style="padding: 10px;">{{ pedido.fecha_pedido.strftime('%Y-%m-%d') }}</td>
-                    <td style="padding: 10px;">${{ pedido.total / 100 }}</td>
-                    <td style="padding: 10px;">
-                        <span
-                            style="padding: 4px 8px; border-radius: 4px; background: rgba(3, 218, 198, 0.2); color: #a7ffeb; font-size: 0.8rem;">
-                            {{ pedido.estado }}
-                        </span>
-                    </td>
+                    <td style="padding: 10px;">{{ pedido.numero_pedido if pedido.numero_pedido else pedido.pedido_id_str }}</td>
+                    <td style="padding: 10px;">{{ pedido.fecha_str }}</td>
+                    <td style="padding: 10px;">{{ pedido.total_display }}</td>
+                    <td style="padding: 10px;">{{ pedido.estado }}</td>
+                    <td style="padding: 10px;"><a href="{{ url_for('order_details', order_id=pedido.pedido_id_str) }}" class="btn">Ver</a></td>
                 </tr>
                 {% endfor %}
             </tbody>
