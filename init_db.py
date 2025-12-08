@@ -164,6 +164,78 @@ def init_db():
 
 
     # ============================
+    #   SUBCATEGORÍAS DE ROPA
+    # ============================
+
+    hoodies_category = {
+        "nombre": "Buzos",
+        "slug": "buzos",
+        "descripcion": "Sudaderas y hoodies",
+        "parent_id": clothing_id,
+        "fecha_creacion": datetime.utcnow()
+    }
+    hoodies_id = db.categorias.insert_one(hoodies_category).inserted_id
+
+    tshirts_category = {
+        "nombre": "Camisetas",
+        "slug": "camisetas",
+        "descripcion": "Camisetas casuales",
+        "parent_id": clothing_id,
+        "fecha_creacion": datetime.utcnow()
+    }
+    tshirts_id = db.categorias.insert_one(tshirts_category).inserted_id
+
+    skirts_category = {
+        "nombre": "Faldas",
+        "slug": "faldas",
+        "descripcion": "Faldas casuales y de vestir",
+        "parent_id": clothing_id,
+        "fecha_creacion": datetime.utcnow()
+    }
+    skirts_id = db.categorias.insert_one(skirts_category).inserted_id
+
+    soccer_category = {
+        "nombre": "Camisetas Deportivas",
+        "slug": "camisetas-deportivas",
+        "descripcion": "Camisetas deportivas oficiales",
+        "parent_id": clothing_id,
+        "fecha_creacion": datetime.utcnow()
+    }
+    soccer_id = db.categorias.insert_one(soccer_category).inserted_id
+
+    # ============================
+    #   SUBCATEGORÍAS GAFAS / JOYERÍA
+    # ============================
+
+    smart_glasses_category = {
+        "nombre": "Gafas Inteligentes",
+        "slug": "gafas-inteligentes",
+        "descripcion": "Gafas con funciones inteligentes",
+        "parent_id": tech_id,
+        "fecha_creacion": datetime.utcnow()
+    }
+    smart_glasses_id = db.categorias.insert_one(smart_glasses_category).inserted_id
+
+    jewelry_category = {
+        "nombre": "Joyería",
+        "slug": "joyeria",
+        "descripcion": "Anillos, cadenas y accesorios",
+        "parent_id": None,
+        "fecha_creacion": datetime.utcnow()
+    }
+    jewelry_id = db.categorias.insert_one(jewelry_category).inserted_id
+
+    mens_jewelry_category = {
+        "nombre": "Joyería para Hombre",
+        "slug": "joyeria-hombre",
+        "descripcion": "Accesorios masculinos",
+        "parent_id": jewelry_id,
+        "fecha_creacion": datetime.utcnow()
+    }
+    mens_jewelry_id = db.categorias.insert_one(mens_jewelry_category).inserted_id
+
+
+    # ============================
     #        ÍNDICES PRODUCTOS
     # ============================
 
@@ -388,9 +460,161 @@ def init_db():
             "visible": True,
             "reseñas": []
         }
+        
     ]
 
     db.productos.insert_many(products_data)
+
+    # ============================
+    #       PRODUCTOS NUEVOS
+    # ============================
+
+    # Nota: precios en centavos para mantener consistencia con el resto del init_db.py
+    additional_products = [
+        {
+            "sku": "TECH-GLASS-001",
+            "nombre": "Gafas Inteligentes VisionX",
+            "descripcion": "Gafas inteligentes con asistente integrado, cámara HD y conectividad Bluetooth.",
+            "categoria": {"id": smart_glasses_id, "nombre": "Gafas Inteligentes"},
+            "precio": 14999,           # $149.99 -> 14999 centavos
+            "moneda": "USD",
+            "stock": 25,
+            "atributos": {"marca": "VisionX", "color": "Negro", "conectividad": "Bluetooth"},
+            "imagenes": ["https://http2.mlstatic.com/D_NQ_NP_622593-CBT78119687397_082024-O.webp"],
+            "fecha_creacion": datetime.utcnow(),
+            "visible": True,
+            "reseñas": []
+        },
+        {
+            "sku": "CLOT-HOOD-001",
+            "nombre": "Buzo Astronauta Galaxy",
+            "descripcion": "Buzo con estampado de astronauta, material suave y cálido.",
+            "categoria": {"id": hoodies_id, "nombre": "Buzos"},
+            "precio": 3999,            # $39.99
+            "moneda": "USD",
+            "stock": 40,
+            "atributos": {"marca": "GalaxyWear", "talla": "M"},
+            "imagenes": ["https://acdn-us.mitiendanube.com/stores/002/114/613/products/a93ce007-639a-4ac1-8f63-934274b666801-a5a526f854751ddf4b16494526294213-640-0.png"],
+            "fecha_creacion": datetime.utcnow(),
+            "visible": True,
+            "reseñas": []
+        },
+        {
+            "sku": "CLOT-SHIRT-001",
+            "nombre": "Camiseta Blanca Básica",
+            "descripcion": "Camiseta blanca ligera y cómoda, ideal para uso diario.",
+            "categoria": {"id": tshirts_id, "nombre": "Camisetas"},
+            "precio": 1499,            # $14.99
+            "moneda": "USD",
+            "stock": 100,
+            "atributos": {"marca": "BasicWear", "talla": "L"},
+            "imagenes": ["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdWIhVeC5aGhe4z7cRU_D4y98fVzql46mhdA&s"],
+            "fecha_creacion": datetime.utcnow(),
+            "visible": True,
+            "reseñas": []
+        },
+        {
+            "sku": "JEW-MAN-NECK-001",
+            "nombre": "Collar para Hombre Titan",
+            "descripcion": "Collar elegante con acabado dorado y piedra brillante.",
+            "categoria": {"id": mens_jewelry_id, "nombre": "Joyería para Hombre"},
+            "precio": 2999,            # $29.99
+            "moneda": "USD",
+            "stock": 50,
+            "atributos": {"material": "Aleación", "acabado": "Dorado"},
+            "imagenes": ["https://cdn-media.glamira.com/media/product/newgeneration/view/1/sku/14976lobris-2.50/diamond/diamond-zirconia_AAAAA/alloycolour/yellow.jpg"],
+            "fecha_creacion": datetime.utcnow(),
+            "visible": True,
+            "reseñas": []
+        },
+        {
+            "sku": "JEW-RING-001",
+            "nombre": "Anillo de Oro Royal",
+            "descripcion": "Anillo de oro con incrustaciones brillantes.",
+            "categoria": {"id": jewelry_id, "nombre": "Joyería"},
+            "precio": 49999,           # $499.99
+            "moneda": "USD",
+            "stock": 10,
+            "atributos": {"material": "Oro", "talla": "10"},
+            "imagenes": ["https://cdn-media.glamira.com/media/product/newgeneration/view/1/sku/15549gisu1/diamond/diamond-Brillant_AAA/stone2/diamond-Brillant_AAA/stone3/diamond-Brillant_AAA/alloycolour/yellow.jpg"],
+            "fecha_creacion": datetime.utcnow(),
+            "visible": True,
+            "reseñas": []
+        },
+        {
+            "sku": "JEW-RING-002",
+            "nombre": "Anillo de Oro Blanco Aurora",
+            "descripcion": "Anillo elegante de oro blanco, perfecto para ocasiones especiales.",
+            "categoria": {"id": jewelry_id, "nombre": "Joyería"},
+            "precio": 45999,           # $459.99
+            "moneda": "USD",
+            "stock": 12,
+            "atributos": {"material": "Oro Blanco"},
+            "imagenes": ["https://cdn-media.glamira.com/media/product/newgeneration/view/1/sku/22136bridal-rise05/diamond/lab-grown-diamond_AAA/alloycolour/white.jpg"],
+            "fecha_creacion": datetime.utcnow(),
+            "visible": True,
+            "reseñas": []
+        },
+        {
+            "sku": "JEW-RING-003",
+            "nombre": "Anillo de Plata Clásico",
+            "descripcion": "Anillo de plata pulida con diseño minimalista.",
+            "categoria": {"id": jewelry_id, "nombre": "Joyería"},
+            "precio": 7999,            # $79.99
+            "moneda": "USD",
+            "stock": 30,
+            "atributos": {"material": "Plata"},
+            "imagenes": ["https://cdn-media.glamira.com/media/product/newgeneration/view/1/sku/GWD210000/alloycolour/white/width/w4/profile/prA/surface/polished.jpg"],
+            "fecha_creacion": datetime.utcnow(),
+            "visible": True,
+            "reseñas": []
+        },
+        {
+            "sku": "CLOT-SKIRT-001",
+            "nombre": "Falda Beige Elegante",
+            "descripcion": "Falda beige de corte clásico, ideal para outfits formales.",
+            "categoria": {"id": skirts_id, "nombre": "Faldas"},
+            "precio": 2499,            # $24.99
+            "moneda": "USD",
+            "stock": 35,
+            "atributos": {"material": "Tela", "talla": "M"},
+            "imagenes": ["https://aguamarinaoficial.com/cdn/shop/files/2_ce0477c4-cec0-4d51-be6e-0e6afd71e3d8.jpg?v=1750965921"],
+            "fecha_creacion": datetime.utcnow(),
+            "visible": True,
+            "reseñas": []
+        },
+        {
+            "sku": "CLOT-SKIRT-002",
+            "nombre": "Falda de Cuero Premium",
+            "descripcion": "Falda de cuero sintético con acabado brillante.",
+            "categoria": {"id": skirts_id, "nombre": "Faldas"},
+            "precio": 4999,            # $49.99
+            "moneda": "USD",
+            "stock": 20,
+            "atributos": {"material": "Cuero sintético"},
+            "imagenes": ["https://m.media-amazon.com/images/I/41TsOKYhUlL._AC_UY1000_.jpg"],
+            "fecha_creacion": datetime.utcnow(),
+            "visible": True,
+            "reseñas": []
+        },
+        {
+            "sku": "CLOT-SOCC-001",
+            "nombre": "Camiseta Inter de Milán Oficial",
+            "descripcion": "Camiseta original del Inter de Milán temporada actual.",
+            "categoria": {"id": soccer_id, "nombre": "Camisetas Deportivas"},
+            "precio": 8999,            # $89.99
+            "moneda": "USD",
+            "stock": 15,
+            "atributos": {"equipo": "Inter de Milán", "talla": "L"},
+            "imagenes": ["https://nikeco.vtexassets.com/arquivos/ids/873730/HJ4591_439_A_PREM.jpg?v=638839496465270000"],
+            "fecha_creacion": datetime.utcnow(),
+            "visible": True,
+            "reseñas": []
+        }
+    ]
+
+    db.productos.insert_many(additional_products)
+
 
     # ============================
     #          PEDIDOS
