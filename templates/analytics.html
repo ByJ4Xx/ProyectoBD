@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 style="margin-bottom: 1.5rem;">Panel de Estadísticas</h1>
+
+<!-- Top metrics -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+    <div class="glass-panel" style="text-align: center;">
+        <h4 style="margin:0; color: #aaa;">Producto más vendido</h4>
+        <div style="font-weight:700; margin-top:0.5rem;">{{ best_product.nombre if best_product else '—' }}</div>
+        <div style="color: #aaa; font-size:0.9rem;">Vendidos: {{ best_product.quantity if best_product else 0 }}</div>
+    </div>
+
+    <div class="glass-panel" style="text-align: center;">
+        <h4 style="margin:0; color: #aaa;">Categoría con más ventas</h4>
+        <div style="font-weight:700; margin-top:0.5rem;">{{ top_category.nombre if top_category else '—' }}</div>
+        <div style="color: #aaa; font-size:0.9rem;">Ingresos: ${{ (top_category.revenue / 100) if top_category else 0 }}</div>
+    </div>
+
+    <div class="glass-panel" style="text-align: center;">
+        <h4 style="margin:0; color: #aaa;">Ingresos Totales</h4>
+        <div style="font-size:1.6rem; font-weight:700; color:var(--secondary-color); margin-top:0.5rem;">${{ total_sales / 100 }}</div>
+    </div>
+
+    <div class="glass-panel" style="text-align: center;">
+        <h4 style="margin:0; color: #aaa;">Clientes Registrados</h4>
+        <div style="font-size:1.6rem; font-weight:700; color:var(--primary-color); margin-top:0.5rem;">{{ num_customers }}</div>
+    </div>
+</div>
+
+<!-- Top 5 products and chart -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+    <div class="glass-panel">
+        <h2 style="margin-bottom: 1rem;">Top 5 Productos más vendidos</h2>
+        {% if top_products %}
+        <ol>
+            {% for p in top_products %}
+            <li style="margin-bottom:0.5rem;">
+                <strong>{{ p.nombre }}</strong> — {{ p.quantity }} vendidos — ${{ (p.revenue / 100) }}
+            </li>
+            {% endfor %}
+        </ol>
+        {% else %}
+        <p style="color:#aaa;">No hay datos de ventas.</p>
+        {% endif %}
+    </div>
+
+    <div class="glass-panel">
+        <h2 style="margin-bottom: 1rem;">Ventas por mes</h2>
+        <canvas id="salesChart" width="400" height="200"></canvas>
+    </div>
+</div>
+
+<!-- Optional detailed table: monthly data -->
+<div style="margin-top:1.5rem;">
+    <div class="glass-panel">
+        <h3 style="margin-bottom:1rem;">Detalle mensual</h3>
+        {% if sales_by_month %}
+        <table style="width:100%; border-collapse:collapse;">
+            <thead>
+                <tr style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.08);">
+                    <th style="padding:8px;">Mes</th>
+                    <th style="padding:8px;">Ingresos</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in sales_by_month %}
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                    <td style="padding:8px;">{{ row.month }}</td>
+                    <td style="padding:8px;">${{ (row.total / 100) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="color:#aaa;">No hay datos mensuales para mostrar.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const labels = {{ sales_by_month|map(attribute='month')|list|tojson }};
+const data = {{ sales_by_month|map(attribute='total')|list|tojson }};
+
+const ctx = document.getElementById('salesChart');
+if (ctx) {
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Ingresos por mes (centavos)',
+                data: data,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                tension: 0.2
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+</script>
+
+{% endblock %}

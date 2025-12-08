@@ -364,6 +364,108 @@ def admin():
                            low_stock_count=low_stock_count,
                            recent_orders=recent_orders)
 
+
+@app.route('/admin/analytics')
+def admin_analytics():
+    if 'user' not in session or session['user']['role'] != 'admin':
+        flash('Acceso denegado. Se requieren permisos de administrador.', 'error')
+        return redirect('/')
+
+    # Total sales (revenue) - reuse approach from /admin
+    pipeline_sales = [{"$group": {"_id": None, "total": {"$sum": "$total"}}}]
+    sales_result = list(db.pedidos.aggregate(pipeline_sales))
+    total_sales = sales_result[0]['total'] if sales_result else 0
+
+    # Number of registered customers (role == 'customer')
+    num_customers = db.usuarios.count_documents({"role": "customer"})
+
+    # Top products by quantity and revenue
+    prod_pipeline = [
+        {"$unwind": "$items"},
+        {"$group": {
+            "_id": "$items.producto_id",
+            "quantity": {"$sum": "$items.cantidad"},
+            "revenue": {"$sum": {"$multiply": ["$items.cantidad", "$items.precio_unitario"]}}
+        }},
+        {"$sort": {"quantity": -1}},
+        {"$limit": 5}
+    ]
+    top_aggr = list(db.pedidos.aggregate(prod_pipeline))
+
+    top_products = []
+    for row in top_aggr:
+        try:
+            prod = db.productos.find_one({"_id": row['_id']})
+            top_products.append({
+                "_id": str(row['_id']),
+                "nombre": prod['nombre'] if prod else 'Desconocido',
+                "quantity": int(row.get('quantity', 0)),
+                "revenue": int(row.get('revenue', 0))
+            })
+        except Exception:
+            top_products.append({
+                "_id": str(row['_id']),
+                "nombre": 'Desconocido',
+                "quantity": int(row.get('quantity', 0)),
+                "revenue": int(row.get('revenue', 0))
+            })
+
+    best_product = top_products[0] if top_products else None
+
+    # Category with most sales (by revenue)
+    cat_pipeline = [
+        {"$unwind": "$items"},
+        {"$lookup": {
+            "from": "productos",
+            "localField": "items.producto_id",
+            "foreignField": "_id",
+            "as": "prod"
+        }},
+        {"$unwind": "$prod"},
+        {"$group": {
+            "_id": "$prod.categoria.id",
+            "quantity": {"$sum": "$items.cantidad"},
+            "revenue": {"$sum": {"$multiply": ["$items.cantidad", "$items.precio_unitario"]}}
+        }},
+        {"$sort": {"revenue": -1}},
+        {"$limit": 1}
+    ]
+    cat_aggr = list(db.pedidos.aggregate(cat_pipeline))
+    top_category = None
+    if cat_aggr:
+        cat_row = cat_aggr[0]
+        cat_doc = None
+        try:
+            cat_doc = db.categorias.find_one({"_id": cat_row['_id']})
+        except Exception:
+            cat_doc = None
+        top_category = {
+            "_id": str(cat_row['_id']) if cat_row.get('_id') else None,
+            "nombre": cat_doc['nombre'] if cat_doc else 'Desconocida',
+            "quantity": int(cat_row.get('quantity', 0)),
+            "revenue": int(cat_row.get('revenue', 0))
+        }
+
+    # Sales by month (YYYY-MM) — sum totals per month
+    month_pipeline = [
+        {"$match": {"fecha_pedido": {"$exists": True}}},
+        {"$group": {
+            "_id": {"$dateToString": {"format": "%Y-%m", "date": "$fecha_pedido"}},
+            "total": {"$sum": "$total"}
+        }},
+        {"$sort": {"_id": 1}}
+    ]
+    month_aggr = list(db.pedidos.aggregate(month_pipeline))
+    sales_by_month = [{"month": m['_id'], "total": int(m['total'])} for m in month_aggr]
+
+    return render_template('analytics.html',
+                           total_sales=total_sales,
+                           num_customers=num_customers,
+                           top_products=top_products,
+                           best_product=best_product,
+                           top_category=top_category,
+                           sales_by_month=sales_by_month)
+
 @app.route('/admin/add_product', methods=['POST'])
 def add_product():
     if 'user' not in session or session['user']['role'] != 'admin':
